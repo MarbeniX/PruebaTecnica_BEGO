@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db";
 import truckRoute from "./routes/truckRoute";
 import userRoutes from "./routes/userRoutes";
+import locationRoute from "./routes/locationRoute";
 
 dotenv.config();
 connectDB();
@@ -15,5 +16,6 @@ app.use(express.json());
 //Routes
 app.use("/api/users", userRoutes);
 app.use("/api/trucks", truckRoute);
+app.use("/api/locations", locationRoute);
 
 export default app;
