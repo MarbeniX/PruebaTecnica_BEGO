@@ -31,5 +31,5 @@ const LocationSchema: Schema = new Schema(
     { timestamps: true }
 );
 
-const lcoation = mongoose.model<ILocation>("Location", LocationSchema);
-export default lcoation;
+const Location = mongoose.model<ILocation>("Location", LocationSchema);
+export default Location;

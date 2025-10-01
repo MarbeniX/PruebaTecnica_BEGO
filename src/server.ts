@@ -16,6 +16,6 @@ app.use(express.json());
 //Routes
 app.use("/api/users", userRoutes);
 app.use("/api/trucks", truckRoute);
-app.use("/api/location", locationRoute);
+app.use("/api/locations", locationRoute);
 
 export default app;
