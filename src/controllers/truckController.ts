@@ -33,7 +33,7 @@ export class TruckController {
                 truck: newTruck,
             });
         } catch (error) {
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -72,7 +72,7 @@ export class TruckController {
                 truck: truckExists,
             });
         } catch (error) {
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -85,7 +85,7 @@ export class TruckController {
             }
             res.status(200).json({ message: "Truck deleted successfully" });
         } catch (error) {
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -94,7 +94,7 @@ export class TruckController {
             const trucks = await Truck.find();
             res.status(200).json(trucks);
         } catch (error) {
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -107,7 +107,7 @@ export class TruckController {
             }
             res.status(200).json(truckExists);
         } catch (error) {
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -118,7 +118,7 @@ export class TruckController {
                 message: "All trucks deleted successfully",
             });
         } catch (error) {
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 }
