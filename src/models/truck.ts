@@ -17,6 +17,17 @@ const TruckSchema: Schema = new Schema(
         year: {
             type: String,
             match: [/^\d{4}$/, "Year must be a 4-digit number"],
+            validate: {
+                validator: function (value: string) {
+                    const yearNum = parseInt(value, 10);
+                    const currentYear = new Date().getFullYear();
+                    return yearNum <= currentYear + 1;
+                },
+                message: (props: any) =>
+                    `Year cannot be greater than ${
+                        new Date().getFullYear() + 1
+                    }`,
+            },
             required: true,
         },
         color: {

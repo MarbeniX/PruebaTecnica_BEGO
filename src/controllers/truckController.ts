@@ -45,7 +45,7 @@ export class TruckController {
                 return res.status(404).json({ message: "Truck not found" });
             }
 
-            const { plates } = req.body;
+            const { plates, userId } = req.body;
             const platesTaken = await Truck.findOne({
                 plates,
                 _id: { $ne: id },
@@ -56,14 +56,13 @@ export class TruckController {
                     .json({ message: "Truck with this plates already exists" });
             }
 
-            const { user_id } = req.body;
-            const userExists = await User.findById(user_id);
+            const userExists = await User.findById(userId);
             if (!userExists) {
                 return res.status(404).json({ message: "User not found" });
             }
 
             const { year, color } = req.body;
-            truckExists.user = user_id;
+            truckExists.user = userId;
             truckExists.year = year;
             truckExists.color = color;
             truckExists.plates = plates;
@@ -107,6 +106,17 @@ export class TruckController {
                 return res.status(404).json({ message: "Truck not found" });
             }
             res.status(200).json(truckExists);
+        } catch (error) {
+            res.status(500).json({ message: "Server error" });
+        }
+    };
+
+    static deleteAllTrucks = async (req: Request, res: Response) => {
+        try {
+            await Truck.deleteMany({});
+            res.status(200).json({
+                message: "All trucks deleted successfully",
+            });
         } catch (error) {
             res.status(500).json({ message: "Server error" });
         }
