@@ -8,18 +8,32 @@ const router = Router();
 
 router.post(
     "/register",
-    body("email").isEmail().withMessage("Invalid email format"),
+    body("email")
+        .isEmail()
+        .withMessage("Invalid email format")
+        .notEmpty()
+        .withMessage("Email is required"),
     body("password")
         .isLength({ min: 6 })
-        .withMessage("Password must be at least 6 characters long"),
+        .withMessage("Password must be at least 6 characters long")
+        .notEmpty()
+        .withMessage("Password is required"),
     handleInputErrors,
     UserController.createUser
 );
 
 router.post(
     "/login",
-    body("email").isEmail().withMessage("Invalid email format"),
-    body("password").notEmpty().withMessage("Password is required"),
+    body("email")
+        .isEmail()
+        .withMessage("Invalid email format")
+        .notEmpty()
+        .withMessage("Email is required"),
+    body("password")
+        .isLength({ min: 6 })
+        .withMessage("Password is required")
+        .notEmpty()
+        .withMessage("Password is required"),
     handleInputErrors,
     UserController.login
 );
@@ -37,7 +51,11 @@ router.get(
 
 router.put(
     "/change-email",
-    body("email").isEmail().withMessage("Invalid email format"),
+    body("email")
+        .isEmail()
+        .withMessage("Invalid email format")
+        .notEmpty()
+        .withMessage("Email is required"),
     handleInputErrors,
     UserController.updateUserEmail
 );
@@ -46,7 +64,9 @@ router.put(
     "/change-password",
     body("password")
         .isLength({ min: 6 })
-        .withMessage("Password must be at least 6 characters long"),
+        .withMessage("Password must be at least 6 characters long")
+        .notEmpty()
+        .withMessage("Password is required"),
     handleInputErrors,
     UserController.updateUserPassword
 );
