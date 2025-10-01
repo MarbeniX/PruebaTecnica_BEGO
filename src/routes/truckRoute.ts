@@ -10,7 +10,11 @@ router.use(authenticateJWT);
 
 router.post(
     "/",
-    body("id").isMongoId().withMessage("Invalid user id").notEmpty(),
+    body("id")
+        .isMongoId()
+        .withMessage("Invalid user id")
+        .notEmpty()
+        .withMessage("User id is required"),
     body("year")
         .isString()
         .withMessage("Year must be a string")
@@ -25,9 +29,18 @@ router.post(
                 );
             }
         })
-        .notEmpty(),
-    body("color").isString().withMessage("Color must be a string").notEmpty(),
-    body("plates").isString().withMessage("Plates must be a string").notEmpty(),
+        .notEmpty()
+        .withMessage("Year is required"),
+    body("color")
+        .isString()
+        .withMessage("Color must be a string")
+        .notEmpty()
+        .withMessage("Color is required"),
+    body("plates")
+        .isString()
+        .withMessage("Plates must be a string")
+        .notEmpty()
+        .withMessage("Plates is required"),
     handleInputErrors,
     TruckController.createTruck
 );
@@ -63,7 +76,7 @@ router.get(
     "/:id",
     param("id").isMongoId().withMessage("Invalid id"),
     handleInputErrors,
-    TruckController.getTrickById
+    TruckController.getTruckById
 );
 
 router.delete(

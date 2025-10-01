@@ -9,7 +9,7 @@ export class TruckController {
             const truckExistsByPlates = await Truck.findOne({ plates });
             if (truckExistsByPlates) {
                 return res
-                    .status(400)
+                    .status(409)
                     .json({ message: "Truck with this plates already exists" });
             }
 
@@ -29,10 +29,16 @@ export class TruckController {
             await newTruck.save();
             res.status(201).json({
                 message: "Truck created successfully",
-                truck: newTruck,
+                data: {
+                    id: newTruck._id,
+                    user: newTruck.user,
+                    year: newTruck.year,
+                    color: newTruck.color,
+                    plates: newTruck.plates,
+                },
             });
         } catch (error) {
-            res.status(500).json({ message: "Server error", error });
+            res.status(500).json({ message: "Server error" });
         }
     };
 
@@ -44,17 +50,18 @@ export class TruckController {
                 return res.status(404).json({ message: "Truck not found" });
             }
 
-            const { plates, userId } = req.body;
+            const { plates } = req.body;
             const platesTaken = await Truck.findOne({
                 plates,
                 _id: { $ne: id },
             });
             if (platesTaken) {
                 return res
-                    .status(400)
+                    .status(409)
                     .json({ message: "Truck with this plates already exists" });
             }
 
+            const { userId } = req.body;
             const userExists = await User.findById(userId);
             if (!userExists) {
                 return res.status(404).json({ message: "User not found" });
@@ -68,10 +75,16 @@ export class TruckController {
             await truckExists.save();
             res.status(200).json({
                 message: "Truck updated successfully",
-                truck: truckExists,
+                data: {
+                    id: truckExists._id,
+                    user: truckExists.user,
+                    year: truckExists.year,
+                    color: truckExists.color,
+                    plates: truckExists.plates,
+                },
             });
         } catch (error) {
-            res.status(500).json({ message: "Server error", error });
+            res.status(500).json({ message: "Server error" });
         }
     };
 
@@ -84,29 +97,48 @@ export class TruckController {
             }
             res.status(200).json({ message: "Truck deleted successfully" });
         } catch (error) {
-            res.status(500).json({ message: "Server error", error });
+            res.status(500).json({ message: "Server error" });
         }
     };
 
     static getAllTrucks = async (req: Request, res: Response) => {
         try {
             const trucks = await Truck.find();
-            res.status(200).json(trucks);
+            const trucksData = trucks.map((truck) => ({
+                id: truck._id,
+                user: truck.user,
+                year: truck.year,
+                color: truck.color,
+                plates: truck.plates,
+            }));
+            res.status(200).json({
+                message: "Trucks retrieved successfully",
+                data: trucksData,
+            });
         } catch (error) {
-            res.status(500).json({ message: "Server error", error });
+            res.status(500).json({ message: "Server error" });
         }
     };
 
-    static getTrickById = async (req: Request, res: Response) => {
+    static getTruckById = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
             const truckExists = await Truck.findById(id);
             if (!truckExists) {
                 return res.status(404).json({ message: "Truck not found" });
             }
-            res.status(200).json(truckExists);
+            res.status(200).json({
+                message: "Truck retrieved successfully",
+                data: {
+                    id: truckExists._id,
+                    user: truckExists.user,
+                    year: truckExists.year,
+                    color: truckExists.color,
+                    plates: truckExists.plates,
+                },
+            });
         } catch (error) {
-            res.status(500).json({ message: "Server error", error });
+            res.status(500).json({ message: "Server error" });
         }
     };
 
@@ -117,7 +149,7 @@ export class TruckController {
                 message: "All trucks deleted successfully",
             });
         } catch (error) {
-            res.status(500).json({ message: "Server error", error });
+            res.status(500).json({ message: "Server error" });
         }
     };
 }
