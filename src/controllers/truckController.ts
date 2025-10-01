@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import Truck from "../models/truck";
 import User from "../models/user";
-import { Types } from "mongoose";
 
 export class TruckController {
     static createTruck = async (req: Request, res: Response) => {
