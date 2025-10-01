@@ -60,7 +60,14 @@ export class UserController {
     static getAllUsers = async (req: Request, res: Response) => {
         try {
             const users = await User.find().select("-password");
-            res.status(200).json({ message: "Users retrieved", data: users });
+            const usersData = users.map((user) => ({
+                id: user._id,
+                email: user.email,
+            }));
+            res.status(200).json({
+                message: "Users retrieved",
+                data: usersData,
+            });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
@@ -73,7 +80,13 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
-            res.status(200).json({ message: "User retrieved", data: user });
+            res.status(200).json({
+                message: "User retrieved",
+                data: {
+                    id: user._id,
+                    email: user.email,
+                },
+            });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }

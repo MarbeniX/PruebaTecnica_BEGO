@@ -6,24 +6,27 @@ export interface IUser extends Document {
     //isDeleted?: boolean;
 }
 
-const UserSchema: Schema = new Schema({
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
+const UserSchema: Schema = new Schema(
+    {
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+        },
+        password: {
+            type: String,
+            required: true,
+            minlength: 6,
+        },
+        // isDeleted: {
+        //     type: Boolean,
+        //     default: false,
+        // },
     },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6,
-    },
-    // isDeleted: {
-    //     type: Boolean,
-    //     default: false,
-    // },
-});
+    { timestamps: true }
+);
 
 const User = mongoose.model<IUser>("User", UserSchema);
 export default User;
