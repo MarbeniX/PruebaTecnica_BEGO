@@ -1,15 +1,13 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
-import { authenticateJWT } from "../middlewares/auth";
 import { handleInputErrors } from "../middlewares/validation";
 import { TruckController } from "../controllers/truckController";
 
 const router = Router();
 
-router.use(authenticateJWT);
-
 router.post(
     "/",
+    body("id").isMongoId().withMessage("Invalid user id"),
     body("year")
         .isString()
         .withMessage("Year must be a string")
@@ -29,6 +27,7 @@ router.post(
 router.put(
     "/:id",
     param("id").isMongoId().withMessage("Invalid id"),
+    body("id").isMongoId().withMessage("Invalid user id"),
     body("year")
         .isString()
         .withMessage("Year must be a string")
@@ -52,5 +51,12 @@ router.delete(
 );
 
 router.get("/", TruckController.getAllTrucks);
+
+router.get(
+    "/:id",
+    param("id").isMongoId().withMessage("Invalid id"),
+    handleInputErrors,
+    TruckController.getTrickById
+);
 
 export default router;

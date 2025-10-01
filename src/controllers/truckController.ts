@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Truck from "../models/truck";
+import User from "../models/user";
+import { Types } from "mongoose";
 
 export class TruckController {
     static createTruck = async (req: Request, res: Response) => {
@@ -12,9 +14,15 @@ export class TruckController {
                     .json({ message: "Truck with this plates already exists" });
             }
 
+            const { id } = req.body;
+            const userExists = await User.findById(id);
+            if (!userExists) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
             const { year, color } = req.body;
             const newTruck = new Truck({
-                user: req.user.id,
+                user: id,
                 year,
                 color,
                 plates,
@@ -48,7 +56,14 @@ export class TruckController {
                     .json({ message: "Truck with this plates already exists" });
             }
 
+            const { user_id } = req.body;
+            const userExists = await User.findById(user_id);
+            if (!userExists) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
             const { year, color } = req.body;
+            truckExists.user = user_id;
             truckExists.year = year;
             truckExists.color = color;
             truckExists.plates = plates;
@@ -79,6 +94,19 @@ export class TruckController {
         try {
             const trucks = await Truck.find();
             res.status(200).json(trucks);
+        } catch (error) {
+            res.status(500).json({ message: "Server error" });
+        }
+    };
+
+    static getTrickById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const truckExists = await Truck.findById(id);
+            if (!truckExists) {
+                return res.status(404).json({ message: "Truck not found" });
+            }
+            res.status(200).json(truckExists);
         } catch (error) {
             res.status(500).json({ message: "Server error" });
         }
