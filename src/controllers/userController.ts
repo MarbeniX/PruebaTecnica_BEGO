@@ -20,7 +20,7 @@ export class UserController {
                 email: newUser.email,
             });
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -44,7 +44,7 @@ export class UserController {
             });
             res.status(200).json({ message: "Login successful", token: jwt });
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -53,7 +53,7 @@ export class UserController {
             const users = await User.find().select("-password");
             res.status(200).json(users);
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -66,7 +66,7 @@ export class UserController {
             }
             res.status(200).json(user);
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -96,7 +96,7 @@ export class UserController {
                 },
             });
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -111,7 +111,7 @@ export class UserController {
 
             res.status(200).json({ message: "Password updated" });
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -125,7 +125,7 @@ export class UserController {
             await User.findByIdAndDelete(id);
             res.status(200).json({ message: "User deleted" });
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 
@@ -135,7 +135,7 @@ export class UserController {
             await User.deleteMany({ _id: { $ne: userId } });
             res.status(200).json({ message: "All other users deleted" });
         } catch (error) {
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({ message: "Server error", error });
         }
     };
 }
