@@ -118,9 +118,9 @@ export class LocationController {
     static deleteLocationsByUser = async (req: Request, res: Response) => {
         try {
             await Location.deleteMany({ createdBy: req.user.id });
-            return res
-                .status(200)
-                .json({ message: "All user locations deleted" });
+            return res.status(200).json({
+                message: `All locations created by user ${req.user.id} deleted`,
+            });
         } catch (error) {
             return res.status(500).json({ message: "Server error" });
         }
