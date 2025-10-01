@@ -50,7 +50,7 @@ export class UserController {
 
     static getAllUsers = async (req: Request, res: Response) => {
         try {
-            const users = await User.find();
+            const users = await User.find().select("-password");
             res.status(200).json(users);
         } catch (error) {
             res.status(500).json({ error: "Server error" });
@@ -60,11 +60,56 @@ export class UserController {
     static getUserById = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const user = await User.findById(id);
+            const user = await User.findById(id).select("-password");
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
             res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static updateUserEmail = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user.id;
+            const { email } = req.body;
+
+            const emailTaken = await User.findOne({
+                email: email,
+                _id: { $ne: userId },
+            });
+            if (emailTaken) {
+                return res
+                    .status(400)
+                    .json({ message: "Email already in use" });
+            }
+
+            req.user.email = email;
+            const updatedUser = await req.user.save();
+
+            res.status(200).json({
+                message: "Email updated, please log in again",
+                user: {
+                    id: updatedUser._id,
+                    email: updatedUser.email,
+                },
+            });
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static updateUserPassword = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user.id;
+            const { password } = req.body;
+
+            const hashedPassword = await hashPassword(password);
+            req.user.password = hashedPassword;
+            await req.user.save();
+
+            res.status(200).json({ message: "Password updated" });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
@@ -89,51 +134,6 @@ export class UserController {
             const userId = req.user.id;
             await User.deleteMany({ _id: { $ne: userId } });
             res.status(200).json({ message: "All other users deleted" });
-        } catch (error) {
-            res.status(500).json({ error: "Server error" });
-        }
-    };
-
-    static updateUserEmail = async (req: Request, res: Response) => {
-        try {
-            const userId = req.user.id;
-            const { newEmail } = req.body;
-
-            const emailTaken = await User.findOne({
-                email: newEmail,
-                _id: { $ne: userId },
-            });
-            if (emailTaken) {
-                return res
-                    .status(400)
-                    .json({ message: "Email already in use" });
-            }
-
-            req.user.email = newEmail;
-            const updatedUser = await req.user.save();
-
-            res.status(200).json({
-                message: "Email updated",
-                user: {
-                    id: updatedUser._id,
-                    email: updatedUser.email,
-                },
-            });
-        } catch (error) {
-            res.status(500).json({ error: "Server error" });
-        }
-    };
-
-    static updateUserPassword = async (req: Request, res: Response) => {
-        try {
-            const userId = req.user.id;
-            const { newPassword } = req.body;
-
-            const hashedPassword = await hashPassword(newPassword);
-            req.user.password = hashedPassword;
-            await req.user.save();
-
-            res.status(200).json({ message: "Password updated" });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }

@@ -35,6 +35,22 @@ router.get(
     UserController.getUserById
 );
 
+router.put(
+    "/change-email",
+    body("email").isEmail().withMessage("Invalid email format"),
+    handleInputErrors,
+    UserController.updateUserEmail
+);
+
+router.put(
+    "/change-password",
+    body("password")
+        .isLength({ min: 6 })
+        .withMessage("Password must be at least 6 characters long"),
+    handleInputErrors,
+    UserController.updateUserPassword
+);
+
 router.delete(
     "/:id",
     param("id").isMongoId().withMessage("Invalid user ID"),
@@ -43,21 +59,4 @@ router.delete(
 );
 
 router.delete("/", handleInputErrors, UserController.deleteAllUsers);
-
-router.put(
-    "/change-email",
-    body("newEmail").isEmail().withMessage("Invalid email format"),
-    handleInputErrors,
-    UserController.updateUserEmail
-);
-
-router.put(
-    "/change-password",
-    body("newPassword")
-        .isLength({ min: 6 })
-        .withMessage("Password must be at least 6 characters long"),
-    handleInputErrors,
-    UserController.updateUserPassword
-);
-
 export default router;
