@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/user";
-import { hashPassword } from "../utils/handlePassword";
+import { comparePassword, hashPassword } from "../utils/handlePassword";
+import { generateJWT } from "../utils/jwt";
 
 export class UserController {
     static createUser = async (req: Request, res: Response) => {
@@ -18,6 +19,121 @@ export class UserController {
                 id: newUser._id,
                 email: newUser.email,
             });
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static login = async (req: Request, res: Response) => {
+        try {
+            const { email, password } = req.body;
+            const userExists = await User.findOne({ email });
+            if (!userExists) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+            const passwordMatch = await comparePassword(
+                userExists.password,
+                password
+            );
+            if (!passwordMatch) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+            const jwt = generateJWT({
+                id: userExists.id,
+                email: userExists.email,
+            });
+            res.status(200).json({ message: "Login successful", token: jwt });
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static getAllUsers = async (req: Request, res: Response) => {
+        try {
+            const users = await User.find();
+            res.status(200).json(users);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static getUserById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static deleteUserById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            await User.findByIdAndDelete(id);
+            res.status(200).json({ message: "User deleted" });
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static deleteAllUsers = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user.id;
+            await User.deleteMany({ _id: { $ne: userId } });
+            res.status(200).json({ message: "All other users deleted" });
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static updateUserEmail = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user.id;
+            const { newEmail } = req.body;
+
+            const emailTaken = await User.findOne({
+                email: newEmail,
+                _id: { $ne: userId },
+            });
+            if (emailTaken) {
+                return res
+                    .status(400)
+                    .json({ message: "Email already in use" });
+            }
+
+            req.user.email = newEmail;
+            const updatedUser = await req.user.save();
+
+            res.status(200).json({
+                message: "Email updated",
+                user: {
+                    id: updatedUser._id,
+                    email: updatedUser.email,
+                },
+            });
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    };
+
+    static updateUserPassword = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user.id;
+            const { newPassword } = req.body;
+
+            const hashedPassword = await hashPassword(newPassword);
+            req.user.password = hashedPassword;
+            await req.user.save();
+
+            res.status(200).json({ message: "Password updated" });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }

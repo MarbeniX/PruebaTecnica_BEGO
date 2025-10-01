@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IUser extends Document {
     email: string;
     password: string;
-    isDeleted?: boolean;
+    //isDeleted?: boolean;
 }
 
 const UserSchema: Schema = new Schema({
@@ -19,10 +19,10 @@ const UserSchema: Schema = new Schema({
         required: true,
         minlength: 6,
     },
-    isDeleted: {
-        type: Boolean,
-        default: false,
-    },
+    // isDeleted: {
+    //     type: Boolean,
+    //     default: false,
+    // },
 });
 
 const User = mongoose.model<IUser>("User", UserSchema);
