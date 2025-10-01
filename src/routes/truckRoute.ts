@@ -2,8 +2,11 @@ import { Router } from "express";
 import { body, param } from "express-validator";
 import { handleInputErrors } from "../middlewares/validation";
 import { TruckController } from "../controllers/truckController";
+import { authenticateJWT } from "../middlewares/auth";
 
 const router = Router();
+
+router.use(authenticateJWT);
 
 router.post(
     "/",
