@@ -9,15 +9,19 @@ export class UserController {
             const { email, password } = req.body;
             const userExists = await User.findOne({ email });
             if (userExists) {
-                return res.status(400).json({ message: "User already exists" });
+                return res.status(409).json({ message: "User already exists" });
             }
+
             const newUser = new User(req.body);
             newUser.password = await hashPassword(password);
             await newUser.save();
+
             res.status(201).json({
                 message: "User created",
-                id: newUser._id,
-                email: newUser.email,
+                data: {
+                    id: newUser._id,
+                    email: newUser.email,
+                },
             });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
@@ -29,20 +33,25 @@ export class UserController {
             const { email, password } = req.body;
             const userExists = await User.findOne({ email });
             if (!userExists) {
-                return res.status(400).json({ message: "Invalid credentials" });
+                return res.status(401).json({ message: "Invalid credentials" });
             }
+
             const passwordMatch = await comparePassword(
                 userExists.password,
                 password
             );
             if (!passwordMatch) {
-                return res.status(400).json({ message: "Invalid credentials" });
+                return res.status(401).json({ message: "Invalid credentials" });
             }
+
             const jwt = generateJWT({
                 id: userExists.id,
                 email: userExists.email,
             });
-            res.status(200).json({ message: "Login successful", token: jwt });
+            res.status(200).json({
+                message: "Login successful",
+                data: jwt,
+            });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
@@ -51,7 +60,7 @@ export class UserController {
     static getAllUsers = async (req: Request, res: Response) => {
         try {
             const users = await User.find().select("-password");
-            res.status(200).json(users);
+            res.status(200).json({ message: "Users retrieved", data: users });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
@@ -64,7 +73,7 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
-            res.status(200).json(user);
+            res.status(200).json({ message: "User retrieved", data: user });
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
@@ -81,7 +90,7 @@ export class UserController {
             });
             if (emailTaken) {
                 return res
-                    .status(400)
+                    .status(409)
                     .json({ message: "Email already in use" });
             }
 
@@ -90,7 +99,7 @@ export class UserController {
 
             res.status(200).json({
                 message: "Email updated, please log in again",
-                user: {
+                data: {
                     id: updatedUser._id,
                     email: updatedUser.email,
                 },
@@ -102,7 +111,6 @@ export class UserController {
 
     static updateUserPassword = async (req: Request, res: Response) => {
         try {
-            const userId = req.user.id;
             const { password } = req.body;
 
             const hashedPassword = await hashPassword(password);
@@ -122,6 +130,7 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
+
             await User.findByIdAndDelete(id);
             res.status(200).json({ message: "User deleted" });
         } catch (error) {
