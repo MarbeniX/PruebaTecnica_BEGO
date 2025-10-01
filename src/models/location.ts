@@ -1,10 +1,11 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface ILocation extends Document {
     address: string;
     place_id: string;
     latitude: number;
     longitude: number;
+    createdBy: Types.ObjectId;
 }
 
 const LocationSchema: Schema = new Schema(
@@ -25,6 +26,11 @@ const LocationSchema: Schema = new Schema(
         },
         longitude: {
             type: Number,
+            required: true,
+        },
+        createdBy: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
             required: true,
         },
     },
