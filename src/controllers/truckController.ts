@@ -88,19 +88,6 @@ export class TruckController {
         }
     };
 
-    static deleteTruckById = async (req: Request, res: Response) => {
-        try {
-            const { id } = req.params;
-            const truck = await Truck.findByIdAndDelete(id);
-            if (!truck) {
-                return res.status(404).json({ message: "Truck not found" });
-            }
-            res.status(200).json({ message: "Truck deleted successfully" });
-        } catch (error) {
-            res.status(500).json({ message: "Server error" });
-        }
-    };
-
     static getAllTrucks = async (req: Request, res: Response) => {
         try {
             const trucks = await Truck.find();
@@ -115,6 +102,19 @@ export class TruckController {
                 message: "Trucks retrieved successfully",
                 data: trucksData,
             });
+        } catch (error) {
+            res.status(500).json({ message: "Server error" });
+        }
+    };
+
+    static deleteTruckById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const truck = await Truck.findByIdAndDelete(id);
+            if (!truck) {
+                return res.status(404).json({ message: "Truck not found" });
+            }
+            res.status(200).json({ message: "Truck deleted successfully" });
         } catch (error) {
             res.status(500).json({ message: "Server error" });
         }

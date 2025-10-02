@@ -34,7 +34,14 @@ export class OrderController {
 
             res.status(201).json({
                 message: "Order created successfully",
-                order: newOrder,
+                order: {
+                    id: newOrder._id,
+                    user: newOrder.user,
+                    truck: newOrder.truck,
+                    pickup: newOrder.pickup,
+                    dropoff: newOrder.dropoff,
+                    status: newOrder.status,
+                },
             });
         } catch (error) {
             res.status(500).json({ message: "Internal server error" });
@@ -55,7 +62,14 @@ export class OrderController {
 
             res.status(200).json({
                 message: "Order found",
-                order: orderExists,
+                order: {
+                    id: orderExists._id,
+                    user: orderExists.user,
+                    truck: orderExists.truck,
+                    pickup: orderExists.pickup,
+                    dropoff: orderExists.dropoff,
+                    status: orderExists.status,
+                },
             });
         } catch (error) {
             res.status(500).json({ message: "Internal server error" });
@@ -137,7 +151,14 @@ export class OrderController {
 
             res.status(200).json({
                 message: "Order status updated successfully",
-                order: orderExists,
+                order: {
+                    id: orderExists._id,
+                    user: orderExists.user,
+                    truck: orderExists.truck,
+                    pickup: orderExists.pickup,
+                    dropoff: orderExists.dropoff,
+                    status: orderExists.status,
+                },
             });
         } catch (error) {
             res.status(500).json({ message: "Internal server error" });
