@@ -34,7 +34,7 @@ Se buscó tener una buena estructura de proyecto y apropiadas prácticas de prog
 
 ## Consideraciones / Dudas  
 1. Normalmente el borrar elementos de la DB se hace con un **softdelete**. Al final decidí no implementarlo y dejar el borrado directo de la DB.  
-2. Pedían CRUD para todos los dominios. Para el dominio **USER** consideré implementar un atributo **ROL** para agregar validación de usuario y asignación de permisos. El cual al final no impelenté. Además, no estaba seguro si hacer los 4 principales endpoints de CRUD pero hice los que considero "generales".  
+2. Pedían CRUD para todos los dominios. Para el dominio **USER** consideré implementar un atributo **ROL** para agregar validación de usuario y asignación de permisos. El cual al final no implementé. Además, no estaba seguro si hacer los 4 principales endpoints de CRUD pero hice los que considero "generales".  
 3. El dominio **LOCATIONS** dice: *"Poder listar, modificar y eliminar las locations CREADAS POR EL USUARIO"*, así que agregué el atributo `createdBy` y un middleware para autenticar al usuario y darle acceso solo a aquellas locations que él haya creado.  
 4. Piden subir el `.env`, decidí dejar los valores reales porque así lo entendí. Comprendo que esto está prohibido hacer en producción.  
 5. En el dominio **ORDERS** los valores en la DB son todos **ObjectID**. Al momento de generar el endpoint `getById` o `getAll`, decidí hacer **populate** a los atributos que consideraba más relevantes.  
